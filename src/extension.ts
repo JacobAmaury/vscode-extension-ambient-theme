@@ -1,26 +1,34 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  const cfg = () => vscode.workspace.getConfiguration('ambientTheme');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "ambient-theme" is now active!');
+  const setThemeByTime = () => {
+    const hour = new Date().getHours();
+    const lightTheme = cfg().get<string>('lightTheme', 'Default Light+');
+    const darkTheme  = cfg().get<string>('darkTheme',  'Default Dark+');
+    const dayStart   = cfg().get<number>('dayStartHour', 13	);
+    const nightStart = cfg().get<number>('nightStartHour', 20);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('ambient-theme.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ambient-theme!');
-	});
+    let target = darkTheme;
+    if (hour >= dayStart && hour < nightStart) {
+      target = lightTheme;
+    }
 
-	context.subscriptions.push(disposable);
+    vscode.workspace
+      .getConfiguration('workbench')
+      .update('colorTheme', target, vscode.ConfigurationTarget.Global);
+
+    vscode.window.setStatusBarMessage(`AmbientTheme (heure=${hour}h) → ${target}`, 3000);
+  };
+
+  // Vérification immédiate au démarrage
+  setThemeByTime();
+
+  // Vérification automatique toutes les 15 minutes
+  const timer = setInterval(setThemeByTime, 15 * 60 * 1000);
+
+  context.subscriptions.push({ dispose: () => clearInterval(timer) });
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}

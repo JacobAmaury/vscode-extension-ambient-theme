@@ -9,13 +9,46 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["*"],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Ambient Theme (Time-based)",
+      "properties": {
+        "ambientTheme.lightTheme": {
+          "type": "string",
+          "default": "Default Light+",
+          "description": "Name of the light theme to apply."
+        },
+        "ambientTheme.darkTheme": {
+          "type": "string",
+          "default": "Default Dark+",
+          "description": "Name of the dark theme to apply."
+        },
+        "ambientTheme.dayStartHour": {
+          "type": "number",
+          "default": 18,
+          "description": "Hour (0–23) after which the light theme is used."
+        },
+        "ambientTheme.nightStartHour": {
+          "type": "number",
+          "default": 20,
+          "description": "Hour (0–23) after which the dark theme is used."
+        }
+      }
+    },
     "commands": [
       {
-        "command": "ambient-theme.helloWorld",
-        "title": "Hello World"
+        "command": "ambient-theme.applyNow",
+        "title": "Ambient Theme: Apply now"
+      },
+      {
+        "command": "ambient-theme.setLight",
+        "title": "Ambient Theme: Switch to Light"
+      },
+      {
+        "command": "ambient-theme.setDark",
+        "title": "Ambient Theme: Switch to Dark"
       }
     ]
   },
